@@ -1,0 +1,42 @@
+enable
+configure terminal
+no ip domain-lookup
+hostname <HOSTNAME>
+no cdp run
+interface range fa 0/1-24
+shutdown
+exit
+ip default-gateway <GATEWAY>
+service password-encryption
+enable password ciscoenpa55
+enable secret ciscosecpa55
+banner motd <BANNER>
+line console 0
+password ciscoconpa55
+login
+logging synchronous
+exec-timeout 20 20
+exit 
+line vty 0 15
+password ciscovtypa55
+login
+exec-timeout 25 20
+transport input ssh
+login local
+exit 
+exit
+copy running-config startup-config
+
+clock set <CURRENT_TIME>
+configure terminal 
+ip domain-name info.ro
+username Admin01 privilege 15 secret Admin01pa55
+crypto key generate rsa
+2048
+interface vlan 1
+description Legatura cu <NETWORK_ADDRESS>
+ip address <SWITCH_ADDRESS> <MASK_ADDRESS>
+no shutdown
+exit
+exit
+copy running-config startup-config
