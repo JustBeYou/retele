@@ -4,23 +4,31 @@ configure terminal
 no ip domain-lookup
 no cdp run
 hostname <HOSTNAME>
-ip default-gateway <GATEWAY>
 ip domain-name info.ro
 
-interface range fa 0/1-24
+interface range GigabitEthernet 0/0 - GigabitEthernet 0/2
+shutdown
+exit
+interface Serial 0/0/0
+shutdown
+exit
+interface Serial 0/0/1
 shutdown
 exit
 
 service password-encryption
+security password min-length 10
+login block-for 60 attempts 3 within 20
 enable password ciscoenpa55
 enable secret ciscosecpa55
-banner motd # <BANNER> #
+banner motd # Sedinta luni #
+banner login # Accesul persoanelor neautorizate este interzis #
 line console 0
 password ciscoconpa55
 login
 logging synchronous
 exec-timeout 20 20
-exit
+exit 
 line vty 0 15
 password ciscovtypa55
 login
@@ -39,12 +47,10 @@ logging host <SERVER_ADDRESS>
 service timestamps log datetime msec
 service timestamps debug datetime msec
 
-interface vlan 1
-description Legatura cu <NETWORK_ADDRESS>
-ip address <SWITCH_ADDRESS> <MASK_ADDRESS>
+interface GigabitEthernet 0/0
+ip address <ROUTER_ADDRESS> <MASK_ADDRESS>
 no shutdown
 exit
 
 exit
 copy running-config startup-config
-

@@ -15,6 +15,15 @@ Format fisier
 ...
 """
 
+"""
+Parole 
+
+ciscoconpa55
+enable
+ciscosecpa55
+
+"""
+
 # Domeniul este INFO.RO
 
 # pentru pc-uri se aloca de la RA+DEFAULT_START_IP
@@ -23,6 +32,7 @@ DEFAULT_START_IP = 10
 border = " " + "=" * 35 + " "
 
 switch_template = open("switch_template.txt").read()
+router_template = open("router_template.txt").read()
 
 def main():
     f = open("input.txt")
@@ -37,7 +47,7 @@ def main():
     base_addr = pasul1(ip_baza)
     
     # calculare puteri si adrese
-    g, m = read_graph(details)
+    g, m, edges = read_graph(details)
     new_base_addr = pasul2(g, base_addr, m)
     
     # configurare retele si legaturi
@@ -95,6 +105,33 @@ def pasul3(g, fst, base_addr, server_location):
     dfs(g[fst], base_addr)
 
     print ()
+    
+    print ("* Configurare legaturi si routing\n")
+    for k,v in ls:    
+        if g[k].value==0: continue
+        
+        print (f"** Router {k}")
+        print ("configure terminal")
+        for i, addrs in enumerate(g[k].serial_interfaces):
+            if addrs == None: continue
+            print (f"interface Serial 0/0/{i}")
+            print (f"ip address {addrs[0]} {addrs[1]}")
+            print ("no shutdown")
+            print ("exit")
+            
+        print ("router rip")
+        print ("version 2")
+        print ("no auto-summary")
+        for neigh in g[k].neighbours:
+            if neigh.value == 0: continue
+            print (f"network {ip_str(neigh.NA)}")
+        for addrs in g[k].serial_interfaces:
+            if addrs == None: continue
+            print (f"network {addrs[2]}")
+        print ("exit\nexit\ncopy running-config startup-config\n\n")
+        #print ("exit\nexit\nexit")
+        print()
+                
 
 # string -> int, int
 def parse_ip(s):
@@ -165,6 +202,7 @@ class NetworkNode:
         self.mask = 0
         self.dns = 0
         self.email = 0
+        self.serial_interfaces = [None, None]
 
     def connect(self, node):
         self.neighbours.append(node)
@@ -176,22 +214,35 @@ class NetworkNode:
         mask_addr = mask_str(self.mask)
         gateway = ip_str(self.RA[0])
         
+        dt = datetime.now().strftime("%H:%M:%S %d %h %Y")
+        
         config_switch = "* Configurare Switch (CLI):\n"
         config_switch += switch_template
         config_switch = config_switch.replace("<HOSTNAME>", f"Sw{self.name.capitalize()}")
         config_switch = config_switch.replace("<GATEWAY>", gateway)
         config_switch = config_switch.replace("<BANNER>", "Sedinta luni")
-        config_switch = config_switch.replace("<CURRENT_TIME>", datetime.now().strftime("%H:%M:%S %d %h %Y"))
+        config_switch = config_switch.replace("<CURRENT_TIME>", dt)
         config_switch = config_switch.replace("<NETWORK_ADDRESS>", ip_str(self.NA, self.mask))
         config_switch = config_switch.replace("<SWITCH_ADDRESS>", ip_str(self.RA[0]+1)) # switch-ul e la +1
         config_switch = config_switch.replace("<MASK_ADDRESS>", mask_addr)
+        config_switch = config_switch.replace("<SERVER_ADDRESS>", ip_str(self.dns))
         
-        return (f"--- --- ---\n{self.name} ({self.value})\n"
+        config_router = "* Configurare Router (CLI):\n"
+        config_router += "Physical - Punem placa de retea HWIC-2T\n"
+        config_router += router_template
+        config_router = config_router.replace("<HOSTNAME>", f"R{self.name.capitalize()}")
+        config_router = config_router.replace("<CURRENT_TIME>", dt)
+        config_router = config_router.replace("<SERVER_ADDRESS>", ip_str(self.dns))
+        config_router = config_router.replace("<ROUTER_ADDRESS>", gateway)
+        config_router = config_router.replace("<MASK_ADDRESS>", mask_addr)
+        
+        return (f"--- --- ---\n*** {self.name} ({self.value}) ***\n"
                 + f"NA: {ip_str(self.NA, self.mask)}\n"
                 + f"BA: {ip_str(self.BA, self.mask)}\n"
                 + f"RA: {ip_str(self.RA[0], self.mask)} - {ip_str(self.RA[1], self.mask)}\n"
                 + f"Mask: {mask_addr}\n\n"
                 + f"* Configurare PC (GUI):\n"
+                + f"Physical - Punem placa de retea CGE!\n"
                 + f"IP: {ip_str(self.RA[0]+DEFAULT_START_IP)} Mask: {mask_addr}\n" 
                 + f"Gateway: {gateway} DNS: {ip_str(self.dns)}\n"
                 + f"* Configurare PC Email (GUI): \n"
@@ -199,6 +250,7 @@ class NetworkNode:
                 + f"Server: {ip_str(self.email)}\n"
                 + f"Username: {self.name} Password: 123456\n\n"
                 + config_switch + "\n\n"
+                + config_router + "\n\n"
                 + "--- --- ---\n\n")
 
 def read_graph(text):
@@ -216,6 +268,7 @@ def read_graph(text):
         gmap[name] = NetworkNode(name, value)
 
     m = int(lines[n+1])
+    edges = []
     for i in range(m):
         line_idx = i + n + 2
         line = lines[line_idx]
@@ -223,8 +276,9 @@ def read_graph(text):
 
         name1, name2 = line[0], line[1]
         gmap[name1].connect(gmap[name2])
+        edges.append((name1, name2))
 
-    return gmap, m
+    return gmap, m, edges
 
 def sort_dict(x):
     return sorted(x.items(), key=lambda item: item[1], reverse=True)
@@ -236,8 +290,8 @@ def find_power(val):
     return -1
 
 def dfs(node, base_addr):
-    for neigh in node.neighbours:
-        print(f"{node.name} - {neigh.name}")
+    for neigh_i, neigh in enumerate(node.neighbours):
+        print(f"{node.name} - {neigh.name}")                
 
         mask = 30
         NA = network_addr(base_addr, mask)
@@ -253,6 +307,13 @@ def dfs(node, base_addr):
         mask_addr = '.'.join(map(str, mask_addr))
         print (f"Mask: {mask_addr}")
         print ()
+        
+        if neigh.value != 0:
+            for i in range(len(node.serial_interfaces)):
+                if node.serial_interfaces[i] == None and neigh.serial_interfaces[i] == None:
+                    node.serial_interfaces[i] = (ip_str(min_addr), mask_addr, ip_str(NA))
+                    node.neighbours[neigh_i].serial_interfaces[i] = (ip_str(max_addr), mask_addr, ip_str(NA))
+                    break
         
         base_addr = dfs(neigh, BA+1)
     return base_addr

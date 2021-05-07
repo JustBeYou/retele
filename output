@@ -1,0 +1,482 @@
+Protocol calculare IP-uri
+[!] Pasul 1 =================================== 
+NA: 160.180.0.0/14
+BA: 160.183.255.255/14
+RA: 160.180.0.1/14 - 160.183.255.254/14
+
+[!] Pasul 2 =================================== 
+BIRLAD 2^13 <= 8191 <= 2^14 -> masca 18
+BUZAU 2^12 <= 4095 <= 2^13 -> masca 19
+BEGA 2^11 <= 2047 <= 2^12 -> masca 20
+Plus inca 3: 2^1 <= 2 <= 2^2 -> masca 30 pentru conexiuni intre retele
+
+[!] Pasul 3 =================================== 
+--- --- ---
+*** BIRLAD (8191) ***
+NA: 160.180.0.0/18
+BA: 160.180.63.255/18
+RA: 160.180.0.1/18 - 160.180.63.254/18
+Mask: 255.255.192.0
+
+* Configurare PC (GUI):
+Physical - Punem placa de retea CGE!
+IP: 160.180.0.11 Mask: 255.255.192.0
+Gateway: 160.180.0.1 DNS: 160.180.111.254
+* Configurare PC Email (GUI): 
+Name: BIRLAD Email: BIRLAD@INFO.ro 
+Server: 160.180.111.254
+Username: BIRLAD Password: 123456
+
+* Configurare Switch (CLI):
+enable
+clock set 10:50:02 07 May 2021
+configure terminal
+no ip domain-lookup
+no cdp run
+hostname SwBirlad
+ip default-gateway 160.180.0.1
+ip domain-name info.ro
+
+interface range fa 0/1-24
+shutdown
+exit
+
+service password-encryption
+enable password ciscoenpa55
+enable secret ciscosecpa55
+banner motd # Sedinta luni #
+line console 0
+password ciscoconpa55
+login
+logging synchronous
+exec-timeout 20 20
+exit
+line vty 0 15
+password ciscovtypa55
+login
+exec-timeout 25 20
+transport input ssh
+login local
+exit 
+exit
+
+configure terminal 
+username Admin01 privilege 15 secret Admin01pa55
+crypto key generate rsa
+2048
+
+logging host 160.180.111.254
+service timestamps log datetime msec
+service timestamps debug datetime msec
+
+interface vlan 1
+description Legatura cu 160.180.0.0/18
+ip address 160.180.0.2 255.255.192.0
+no shutdown
+exit
+
+exit
+copy running-config startup-config
+
+
+
+* Configurare Router (CLI):
+Physical - Punem placa de retea HWIC-2T
+enable
+clock set 10:50:02 07 May 2021
+configure terminal
+no ip domain-lookup
+no cdp run
+hostname RBirlad
+ip domain-name info.ro
+
+interface range GigabitEthernet 0/0 - GigabitEthernet 0/2
+shutdown
+exit
+interface Serial 0/0/0
+shutdown
+exit
+interface Serial 0/0/1
+shutdown
+exit
+
+service password-encryption
+security password min-length 10
+login block-for 60 attempts 3 within 20
+enable password ciscoenpa55
+enable secret ciscosecpa55
+banner motd # Sedinta luni #
+banner login # Accesul persoanelor neautorizate este interzis #
+line console 0
+password ciscoconpa55
+login
+logging synchronous
+exec-timeout 20 20
+exit 
+line vty 0 15
+password ciscovtypa55
+login
+exec-timeout 25 20
+transport input ssh
+login local
+exit 
+exit
+
+configure terminal 
+username Admin01 privilege 15 secret Admin01pa55
+crypto key generate rsa
+2048
+
+logging host 160.180.111.254
+service timestamps log datetime msec
+service timestamps debug datetime msec
+
+interface GigabitEthernet 0/0
+ip address 160.180.0.1 255.255.192.0
+no shutdown
+exit
+
+exit
+copy running-config startup-config
+
+--- --- ---
+
+
+--- --- ---
+*** BUZAU (4095) ***
+NA: 160.180.64.0/19
+BA: 160.180.95.255/19
+RA: 160.180.64.1/19 - 160.180.95.254/19
+Mask: 255.255.224.0
+
+* Configurare PC (GUI):
+Physical - Punem placa de retea CGE!
+IP: 160.180.64.11 Mask: 255.255.224.0
+Gateway: 160.180.64.1 DNS: 160.180.111.254
+* Configurare PC Email (GUI): 
+Name: BUZAU Email: BUZAU@INFO.ro 
+Server: 160.180.111.254
+Username: BUZAU Password: 123456
+
+* Configurare Switch (CLI):
+enable
+clock set 10:50:02 07 May 2021
+configure terminal
+no ip domain-lookup
+no cdp run
+hostname SwBuzau
+ip default-gateway 160.180.64.1
+ip domain-name info.ro
+
+interface range fa 0/1-24
+shutdown
+exit
+
+service password-encryption
+enable password ciscoenpa55
+enable secret ciscosecpa55
+banner motd # Sedinta luni #
+line console 0
+password ciscoconpa55
+login
+logging synchronous
+exec-timeout 20 20
+exit
+line vty 0 15
+password ciscovtypa55
+login
+exec-timeout 25 20
+transport input ssh
+login local
+exit 
+exit
+
+configure terminal 
+username Admin01 privilege 15 secret Admin01pa55
+crypto key generate rsa
+2048
+
+logging host 160.180.111.254
+service timestamps log datetime msec
+service timestamps debug datetime msec
+
+interface vlan 1
+description Legatura cu 160.180.64.0/19
+ip address 160.180.64.2 255.255.224.0
+no shutdown
+exit
+
+exit
+copy running-config startup-config
+
+
+
+* Configurare Router (CLI):
+Physical - Punem placa de retea HWIC-2T
+enable
+clock set 10:50:02 07 May 2021
+configure terminal
+no ip domain-lookup
+no cdp run
+hostname RBuzau
+ip domain-name info.ro
+
+interface range GigabitEthernet 0/0 - GigabitEthernet 0/2
+shutdown
+exit
+interface Serial 0/0/0
+shutdown
+exit
+interface Serial 0/0/1
+shutdown
+exit
+
+service password-encryption
+security password min-length 10
+login block-for 60 attempts 3 within 20
+enable password ciscoenpa55
+enable secret ciscosecpa55
+banner motd # Sedinta luni #
+banner login # Accesul persoanelor neautorizate este interzis #
+line console 0
+password ciscoconpa55
+login
+logging synchronous
+exec-timeout 20 20
+exit 
+line vty 0 15
+password ciscovtypa55
+login
+exec-timeout 25 20
+transport input ssh
+login local
+exit 
+exit
+
+configure terminal 
+username Admin01 privilege 15 secret Admin01pa55
+crypto key generate rsa
+2048
+
+logging host 160.180.111.254
+service timestamps log datetime msec
+service timestamps debug datetime msec
+
+interface GigabitEthernet 0/0
+ip address 160.180.64.1 255.255.224.0
+no shutdown
+exit
+
+exit
+copy running-config startup-config
+
+--- --- ---
+
+
+--- --- ---
+*** BEGA (2047) ***
+NA: 160.180.96.0/20
+BA: 160.180.111.255/20
+RA: 160.180.96.1/20 - 160.180.111.254/20
+Mask: 255.255.240.0
+
+* Configurare PC (GUI):
+Physical - Punem placa de retea CGE!
+IP: 160.180.96.11 Mask: 255.255.240.0
+Gateway: 160.180.96.1 DNS: 160.180.111.254
+* Configurare PC Email (GUI): 
+Name: BEGA Email: BEGA@INFO.ro 
+Server: 160.180.111.254
+Username: BEGA Password: 123456
+
+* Configurare Switch (CLI):
+enable
+clock set 10:50:02 07 May 2021
+configure terminal
+no ip domain-lookup
+no cdp run
+hostname SwBega
+ip default-gateway 160.180.96.1
+ip domain-name info.ro
+
+interface range fa 0/1-24
+shutdown
+exit
+
+service password-encryption
+enable password ciscoenpa55
+enable secret ciscosecpa55
+banner motd # Sedinta luni #
+line console 0
+password ciscoconpa55
+login
+logging synchronous
+exec-timeout 20 20
+exit
+line vty 0 15
+password ciscovtypa55
+login
+exec-timeout 25 20
+transport input ssh
+login local
+exit 
+exit
+
+configure terminal 
+username Admin01 privilege 15 secret Admin01pa55
+crypto key generate rsa
+2048
+
+logging host 160.180.111.254
+service timestamps log datetime msec
+service timestamps debug datetime msec
+
+interface vlan 1
+description Legatura cu 160.180.96.0/20
+ip address 160.180.96.2 255.255.240.0
+no shutdown
+exit
+
+exit
+copy running-config startup-config
+
+
+
+* Configurare Router (CLI):
+Physical - Punem placa de retea HWIC-2T
+enable
+clock set 10:50:02 07 May 2021
+configure terminal
+no ip domain-lookup
+no cdp run
+hostname RBega
+ip domain-name info.ro
+
+interface range GigabitEthernet 0/0 - GigabitEthernet 0/2
+shutdown
+exit
+interface Serial 0/0/0
+shutdown
+exit
+interface Serial 0/0/1
+shutdown
+exit
+
+service password-encryption
+security password min-length 10
+login block-for 60 attempts 3 within 20
+enable password ciscoenpa55
+enable secret ciscosecpa55
+banner motd # Sedinta luni #
+banner login # Accesul persoanelor neautorizate este interzis #
+line console 0
+password ciscoconpa55
+login
+logging synchronous
+exec-timeout 20 20
+exit 
+line vty 0 15
+password ciscovtypa55
+login
+exec-timeout 25 20
+transport input ssh
+login local
+exit 
+exit
+
+configure terminal 
+username Admin01 privilege 15 secret Admin01pa55
+crypto key generate rsa
+2048
+
+logging host 160.180.111.254
+service timestamps log datetime msec
+service timestamps debug datetime msec
+
+interface GigabitEthernet 0/0
+ip address 160.180.96.1 255.255.240.0
+no shutdown
+exit
+
+exit
+copy running-config startup-config
+
+--- --- ---
+
+
+BUZAU - BEGA
+NA: 160.180.112.0/30
+BA: 160.180.112.3/30
+RA: 160.180.112.1/30 - 160.180.112.2/30
+Mask: 255.255.255.252
+
+BEGA - WIFI-BEGA
+NA: 160.180.112.4/30
+BA: 160.180.112.7/30
+RA: 160.180.112.5/30 - 160.180.112.6/30
+Mask: 255.255.255.252
+
+BEGA - BIRLAD
+NA: 160.180.112.8/30
+BA: 160.180.112.11/30
+RA: 160.180.112.9/30 - 160.180.112.10/30
+Mask: 255.255.255.252
+
+
+* Configurare legaturi si routing
+
+** Router BIRLAD
+configure terminal
+interface Serial 0/0/1
+ip address 160.180.112.10 255.255.255.252
+no shutdown
+exit
+router rip
+version 2
+no auto-summary
+network 160.180.112.8
+exit
+exit
+copy running-config startup-config
+
+
+
+** Router BUZAU
+configure terminal
+interface Serial 0/0/0
+ip address 160.180.112.1 255.255.255.252
+no shutdown
+exit
+router rip
+version 2
+no auto-summary
+network 160.180.96.0
+network 160.180.112.0
+exit
+exit
+copy running-config startup-config
+
+
+
+** Router BEGA
+configure terminal
+interface Serial 0/0/0
+ip address 160.180.112.2 255.255.255.252
+no shutdown
+exit
+interface Serial 0/0/1
+ip address 160.180.112.9 255.255.255.252
+no shutdown
+exit
+router rip
+version 2
+no auto-summary
+network 160.180.0.0
+network 160.180.112.0
+network 160.180.112.8
+exit
+exit
+copy running-config startup-config
+
+
+
