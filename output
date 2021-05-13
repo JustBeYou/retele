@@ -29,7 +29,7 @@ Username: BIRLAD Password: 123456
 
 * Configurare Switch (CLI):
 enable
-clock set 10:50:02 07 May 2021
+clock set 11:33:23 13 May 2021
 configure terminal
 no ip domain-lookup
 no cdp run
@@ -83,7 +83,7 @@ copy running-config startup-config
 * Configurare Router (CLI):
 Physical - Punem placa de retea HWIC-2T
 enable
-clock set 10:50:02 07 May 2021
+clock set 11:33:23 13 May 2021
 configure terminal
 no ip domain-lookup
 no cdp run
@@ -160,7 +160,7 @@ Username: BUZAU Password: 123456
 
 * Configurare Switch (CLI):
 enable
-clock set 10:50:02 07 May 2021
+clock set 11:33:23 13 May 2021
 configure terminal
 no ip domain-lookup
 no cdp run
@@ -214,7 +214,7 @@ copy running-config startup-config
 * Configurare Router (CLI):
 Physical - Punem placa de retea HWIC-2T
 enable
-clock set 10:50:02 07 May 2021
+clock set 11:33:23 13 May 2021
 configure terminal
 no ip domain-lookup
 no cdp run
@@ -291,7 +291,7 @@ Username: BEGA Password: 123456
 
 * Configurare Switch (CLI):
 enable
-clock set 10:50:02 07 May 2021
+clock set 11:33:23 13 May 2021
 configure terminal
 no ip domain-lookup
 no cdp run
@@ -345,7 +345,7 @@ copy running-config startup-config
 * Configurare Router (CLI):
 Physical - Punem placa de retea HWIC-2T
 enable
-clock set 10:50:02 07 May 2021
+clock set 11:33:23 13 May 2021
 configure terminal
 no ip domain-lookup
 no cdp run
@@ -434,6 +434,8 @@ exit
 router rip
 version 2
 no auto-summary
+network 160.180.0.0
+network 160.180.96.0
 network 160.180.112.8
 exit
 exit
@@ -450,6 +452,7 @@ exit
 router rip
 version 2
 no auto-summary
+network 160.180.64.0
 network 160.180.96.0
 network 160.180.112.0
 exit
@@ -471,7 +474,9 @@ exit
 router rip
 version 2
 no auto-summary
+network 160.180.96.0
 network 160.180.0.0
+network 160.180.64.0
 network 160.180.112.0
 network 160.180.112.8
 exit

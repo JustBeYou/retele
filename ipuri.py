@@ -122,7 +122,8 @@ def pasul3(g, fst, base_addr, server_location):
         print ("router rip")
         print ("version 2")
         print ("no auto-summary")
-        for neigh in g[k].neighbours:
+        print (f"network {ip_str(g[k].NA)}")
+        for neigh in g[k].neighbours + g[k].backward_neighbours:
             if neigh.value == 0: continue
             print (f"network {ip_str(neigh.NA)}")
         for addrs in g[k].serial_interfaces:
@@ -196,6 +197,7 @@ class NetworkNode:
         self.name = name
         self.value = value
         self.neighbours = []
+        self.backward_neighbours = []
         self.NA = 0
         self.BA = 0
         self.RA = [0, 0]
@@ -206,6 +208,7 @@ class NetworkNode:
 
     def connect(self, node):
         self.neighbours.append(node)
+        node.backward_neighbours.append(self)
 
     def __lt__(self, other):
         return self.value < other.value
