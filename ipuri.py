@@ -31,6 +31,8 @@ DEFAULT_START_IP = 10
 
 border = " " + "=" * 35 + " "
 
+WIFI = -1
+
 switch_template = open("switch_template.txt").read()
 router_template = open("router_template.txt").read()
 
@@ -75,7 +77,7 @@ def pasul2(g, base_addr, m):
     ls = sort_dict(g)
     caddr = base_addr
     for k,v in ls:
-        if v.value == 0: continue # ignoram routerele singure
+        if v.value <= 0: continue # ignoram wifi-urile
         p = find_power(v.value+2) # + 2 hosturi pentru gateway si broadcast
         mask = 32 - p
         print (f"{k} 2^{p-1} <= {v.value} <= 2^{p} -> masca {mask}")
@@ -99,7 +101,7 @@ def pasul3(g, fst, base_addr, server_location):
     for k,v in ls:
         g[k].dns = g[k].email = g[server_location].RA[1] # ultima adresa in retea
     
-        if g[k].value==0: continue
+        if g[k].value==WIFI: continue
         print (g[k])
 
     dfs(g[fst], base_addr)
@@ -108,7 +110,7 @@ def pasul3(g, fst, base_addr, server_location):
     
     print ("* Configurare legaturi si routing\n")
     for k,v in ls:    
-        if g[k].value==0: continue
+        if g[k].value==WIFI: continue
         
         print (f"** Router {k}")
         print ("configure terminal")
@@ -124,7 +126,7 @@ def pasul3(g, fst, base_addr, server_location):
         print ("no auto-summary")
         print (f"network {ip_str(g[k].NA)}")
         for neigh in g[k].neighbours + g[k].backward_neighbours:
-            if neigh.value == 0: continue
+            if neigh.value <= 0: continue
             print (f"network {ip_str(neigh.NA)}")
         for addrs in g[k].serial_interfaces:
             if addrs == None: continue
@@ -219,16 +221,19 @@ class NetworkNode:
         
         dt = datetime.now().strftime("%H:%M:%S %d %h %Y")
         
-        config_switch = "* Configurare Switch (CLI):\n"
-        config_switch += switch_template
-        config_switch = config_switch.replace("<HOSTNAME>", f"Sw{self.name.capitalize()}")
-        config_switch = config_switch.replace("<GATEWAY>", gateway)
-        config_switch = config_switch.replace("<BANNER>", "Sedinta luni")
-        config_switch = config_switch.replace("<CURRENT_TIME>", dt)
-        config_switch = config_switch.replace("<NETWORK_ADDRESS>", ip_str(self.NA, self.mask))
-        config_switch = config_switch.replace("<SWITCH_ADDRESS>", ip_str(self.RA[0]+1)) # switch-ul e la +1
-        config_switch = config_switch.replace("<MASK_ADDRESS>", mask_addr)
-        config_switch = config_switch.replace("<SERVER_ADDRESS>", ip_str(self.dns))
+        if self.value > 0:
+            config_switch = "* Configurare Switch (CLI):\n"
+            config_switch += switch_template
+            config_switch = config_switch.replace("<HOSTNAME>", f"Sw{self.name.capitalize()}")
+            config_switch = config_switch.replace("<GATEWAY>", gateway)
+            config_switch = config_switch.replace("<BANNER>", "Sedinta luni")
+            config_switch = config_switch.replace("<CURRENT_TIME>", dt)
+            config_switch = config_switch.replace("<NETWORK_ADDRESS>", ip_str(self.NA, self.mask))
+            config_switch = config_switch.replace("<SWITCH_ADDRESS>", ip_str(self.RA[0]+1)) # switch-ul e la +1
+            config_switch = config_switch.replace("<MASK_ADDRESS>", mask_addr)
+            config_switch = config_switch.replace("<SERVER_ADDRESS>", ip_str(self.dns))
+        else:
+            config_switch = ""
         
         config_router = "* Configurare Router (CLI):\n"
         config_router += "Physical - Punem placa de retea HWIC-2T\n"
@@ -311,7 +316,7 @@ def dfs(node, base_addr):
         print (f"Mask: {mask_addr}")
         print ()
         
-        if neigh.value != 0:
+        if neigh.value >= 0:
             for i in range(len(node.serial_interfaces)):
                 if node.serial_interfaces[i] == None and neigh.serial_interfaces[i] == None:
                     node.serial_interfaces[i] = (ip_str(min_addr), mask_addr, ip_str(NA))

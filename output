@@ -1,40 +1,40 @@
 Protocol calculare IP-uri
 [!] Pasul 1 =================================== 
-NA: 160.180.0.0/14
-BA: 160.183.255.255/14
-RA: 160.180.0.1/14 - 160.183.255.254/14
+NA: 54.192.0.0/11
+BA: 54.223.255.255/11
+RA: 54.192.0.1/11 - 54.223.255.254/11
 
 [!] Pasul 2 =================================== 
-BIRLAD 2^13 <= 8191 <= 2^14 -> masca 18
-BUZAU 2^12 <= 4095 <= 2^13 -> masca 19
-BEGA 2^11 <= 2047 <= 2^12 -> masca 20
-Plus inca 3: 2^1 <= 2 <= 2^2 -> masca 30 pentru conexiuni intre retele
+Harare3 2^13 <= 10220 <= 2^14 -> masca 18
+Harare1 2^9 <= 1022 <= 2^10 -> masca 22
+Harare2 2^8 <= 510 <= 2^9 -> masca 23
+Plus inca 4: 2^1 <= 2 <= 2^2 -> masca 30 pentru conexiuni intre retele
 
 [!] Pasul 3 =================================== 
 --- --- ---
-*** BIRLAD (8191) ***
-NA: 160.180.0.0/18
-BA: 160.180.63.255/18
-RA: 160.180.0.1/18 - 160.180.63.254/18
+*** Harare3 (10220) ***
+NA: 54.192.0.0/18
+BA: 54.192.63.255/18
+RA: 54.192.0.1/18 - 54.192.63.254/18
 Mask: 255.255.192.0
 
 * Configurare PC (GUI):
 Physical - Punem placa de retea CGE!
-IP: 160.180.0.11 Mask: 255.255.192.0
-Gateway: 160.180.0.1 DNS: 160.180.111.254
+IP: 54.192.0.11 Mask: 255.255.192.0
+Gateway: 54.192.0.1 DNS: 54.192.69.254
 * Configurare PC Email (GUI): 
-Name: BIRLAD Email: BIRLAD@INFO.ro 
-Server: 160.180.111.254
-Username: BIRLAD Password: 123456
+Name: Harare3 Email: Harare3@INFO.ro 
+Server: 54.192.69.254
+Username: Harare3 Password: 123456
 
 * Configurare Switch (CLI):
 enable
-clock set 11:33:23 13 May 2021
+clock set 08:11:47 21 May 2021
 configure terminal
 no ip domain-lookup
 no cdp run
-hostname SwBirlad
-ip default-gateway 160.180.0.1
+hostname SwHarare3
+ip default-gateway 54.192.0.1
 ip domain-name info.ro
 
 interface range fa 0/1-24
@@ -65,13 +65,13 @@ username Admin01 privilege 15 secret Admin01pa55
 crypto key generate rsa
 2048
 
-logging host 160.180.111.254
+logging host 54.192.69.254
 service timestamps log datetime msec
 service timestamps debug datetime msec
 
 interface vlan 1
-description Legatura cu 160.180.0.0/18
-ip address 160.180.0.2 255.255.192.0
+description Legatura cu 54.192.0.0/18
+ip address 54.192.0.2 255.255.192.0
 no shutdown
 exit
 
@@ -83,11 +83,11 @@ copy running-config startup-config
 * Configurare Router (CLI):
 Physical - Punem placa de retea HWIC-2T
 enable
-clock set 11:33:23 13 May 2021
+clock set 08:11:47 21 May 2021
 configure terminal
 no ip domain-lookup
 no cdp run
-hostname RBirlad
+hostname RHarare3
 ip domain-name info.ro
 
 interface range GigabitEthernet 0/0 - GigabitEthernet 0/2
@@ -127,12 +127,13 @@ username Admin01 privilege 15 secret Admin01pa55
 crypto key generate rsa
 2048
 
-logging host 160.180.111.254
+logging host 54.192.69.254
 service timestamps log datetime msec
 service timestamps debug datetime msec
 
 interface GigabitEthernet 0/0
-ip address 160.180.0.1 255.255.192.0
+ip address 54.192.0.1 255.255.192.0
+ip helper-address 54.192.69.254
 no shutdown
 exit
 
@@ -143,29 +144,29 @@ copy running-config startup-config
 
 
 --- --- ---
-*** BUZAU (4095) ***
-NA: 160.180.64.0/19
-BA: 160.180.95.255/19
-RA: 160.180.64.1/19 - 160.180.95.254/19
-Mask: 255.255.224.0
+*** Harare1 (1022) ***
+NA: 54.192.64.0/22
+BA: 54.192.67.255/22
+RA: 54.192.64.1/22 - 54.192.67.254/22
+Mask: 255.255.252.0
 
 * Configurare PC (GUI):
 Physical - Punem placa de retea CGE!
-IP: 160.180.64.11 Mask: 255.255.224.0
-Gateway: 160.180.64.1 DNS: 160.180.111.254
+IP: 54.192.64.11 Mask: 255.255.252.0
+Gateway: 54.192.64.1 DNS: 54.192.69.254
 * Configurare PC Email (GUI): 
-Name: BUZAU Email: BUZAU@INFO.ro 
-Server: 160.180.111.254
-Username: BUZAU Password: 123456
+Name: Harare1 Email: Harare1@INFO.ro 
+Server: 54.192.69.254
+Username: Harare1 Password: 123456
 
 * Configurare Switch (CLI):
 enable
-clock set 11:33:23 13 May 2021
+clock set 08:11:47 21 May 2021
 configure terminal
 no ip domain-lookup
 no cdp run
-hostname SwBuzau
-ip default-gateway 160.180.64.1
+hostname SwHarare1
+ip default-gateway 54.192.64.1
 ip domain-name info.ro
 
 interface range fa 0/1-24
@@ -196,13 +197,13 @@ username Admin01 privilege 15 secret Admin01pa55
 crypto key generate rsa
 2048
 
-logging host 160.180.111.254
+logging host 54.192.69.254
 service timestamps log datetime msec
 service timestamps debug datetime msec
 
 interface vlan 1
-description Legatura cu 160.180.64.0/19
-ip address 160.180.64.2 255.255.224.0
+description Legatura cu 54.192.64.0/22
+ip address 54.192.64.2 255.255.252.0
 no shutdown
 exit
 
@@ -214,11 +215,11 @@ copy running-config startup-config
 * Configurare Router (CLI):
 Physical - Punem placa de retea HWIC-2T
 enable
-clock set 11:33:23 13 May 2021
+clock set 08:11:47 21 May 2021
 configure terminal
 no ip domain-lookup
 no cdp run
-hostname RBuzau
+hostname RHarare1
 ip domain-name info.ro
 
 interface range GigabitEthernet 0/0 - GigabitEthernet 0/2
@@ -258,12 +259,13 @@ username Admin01 privilege 15 secret Admin01pa55
 crypto key generate rsa
 2048
 
-logging host 160.180.111.254
+logging host 54.192.69.254
 service timestamps log datetime msec
 service timestamps debug datetime msec
 
 interface GigabitEthernet 0/0
-ip address 160.180.64.1 255.255.224.0
+ip address 54.192.64.1 255.255.252.0
+ip helper-address 54.192.69.254
 no shutdown
 exit
 
@@ -274,29 +276,29 @@ copy running-config startup-config
 
 
 --- --- ---
-*** BEGA (2047) ***
-NA: 160.180.96.0/20
-BA: 160.180.111.255/20
-RA: 160.180.96.1/20 - 160.180.111.254/20
-Mask: 255.255.240.0
+*** Harare2 (510) ***
+NA: 54.192.68.0/23
+BA: 54.192.69.255/23
+RA: 54.192.68.1/23 - 54.192.69.254/23
+Mask: 255.255.254.0
 
 * Configurare PC (GUI):
 Physical - Punem placa de retea CGE!
-IP: 160.180.96.11 Mask: 255.255.240.0
-Gateway: 160.180.96.1 DNS: 160.180.111.254
+IP: 54.192.68.11 Mask: 255.255.254.0
+Gateway: 54.192.68.1 DNS: 54.192.69.254
 * Configurare PC Email (GUI): 
-Name: BEGA Email: BEGA@INFO.ro 
-Server: 160.180.111.254
-Username: BEGA Password: 123456
+Name: Harare2 Email: Harare2@INFO.ro 
+Server: 54.192.69.254
+Username: Harare2 Password: 123456
 
 * Configurare Switch (CLI):
 enable
-clock set 11:33:23 13 May 2021
+clock set 08:11:47 21 May 2021
 configure terminal
 no ip domain-lookup
 no cdp run
-hostname SwBega
-ip default-gateway 160.180.96.1
+hostname SwHarare2
+ip default-gateway 54.192.68.1
 ip domain-name info.ro
 
 interface range fa 0/1-24
@@ -327,13 +329,13 @@ username Admin01 privilege 15 secret Admin01pa55
 crypto key generate rsa
 2048
 
-logging host 160.180.111.254
+logging host 54.192.69.254
 service timestamps log datetime msec
 service timestamps debug datetime msec
 
 interface vlan 1
-description Legatura cu 160.180.96.0/20
-ip address 160.180.96.2 255.255.240.0
+description Legatura cu 54.192.68.0/23
+ip address 54.192.68.2 255.255.254.0
 no shutdown
 exit
 
@@ -345,11 +347,11 @@ copy running-config startup-config
 * Configurare Router (CLI):
 Physical - Punem placa de retea HWIC-2T
 enable
-clock set 11:33:23 13 May 2021
+clock set 08:11:47 21 May 2021
 configure terminal
 no ip domain-lookup
 no cdp run
-hostname RBega
+hostname RHarare2
 ip domain-name info.ro
 
 interface range GigabitEthernet 0/0 - GigabitEthernet 0/2
@@ -389,12 +391,13 @@ username Admin01 privilege 15 secret Admin01pa55
 crypto key generate rsa
 2048
 
-logging host 160.180.111.254
+logging host 54.192.69.254
 service timestamps log datetime msec
 service timestamps debug datetime msec
 
 interface GigabitEthernet 0/0
-ip address 160.180.96.1 255.255.240.0
+ip address 54.192.68.1 255.255.254.0
+ip helper-address 54.192.69.254
 no shutdown
 exit
 
@@ -404,81 +407,191 @@ copy running-config startup-config
 --- --- ---
 
 
-BUZAU - BEGA
-NA: 160.180.112.0/30
-BA: 160.180.112.3/30
-RA: 160.180.112.1/30 - 160.180.112.2/30
+--- --- ---
+*** Harare4 (0) ***
+NA: 0.0.0.0/0
+BA: 0.0.0.0/0
+RA: 0.0.0.0/0 - 0.0.0.0/0
+Mask: 0.0.0.0
+
+* Configurare PC (GUI):
+Physical - Punem placa de retea CGE!
+IP: 0.0.0.10 Mask: 0.0.0.0
+Gateway: 0.0.0.0 DNS: 54.192.69.254
+* Configurare PC Email (GUI): 
+Name: Harare4 Email: Harare4@INFO.ro 
+Server: 54.192.69.254
+Username: Harare4 Password: 123456
+
+
+
+* Configurare Router (CLI):
+Physical - Punem placa de retea HWIC-2T
+enable
+clock set 08:11:47 21 May 2021
+configure terminal
+no ip domain-lookup
+no cdp run
+hostname RHarare4
+ip domain-name info.ro
+
+interface range GigabitEthernet 0/0 - GigabitEthernet 0/2
+shutdown
+exit
+interface Serial 0/0/0
+shutdown
+exit
+interface Serial 0/0/1
+shutdown
+exit
+
+service password-encryption
+security password min-length 10
+login block-for 60 attempts 3 within 20
+enable password ciscoenpa55
+enable secret ciscosecpa55
+banner motd # Sedinta luni #
+banner login # Accesul persoanelor neautorizate este interzis #
+line console 0
+password ciscoconpa55
+login
+logging synchronous
+exec-timeout 20 20
+exit 
+line vty 0 15
+password ciscovtypa55
+login
+exec-timeout 25 20
+transport input ssh
+login local
+exit 
+exit
+
+configure terminal 
+username Admin01 privilege 15 secret Admin01pa55
+crypto key generate rsa
+2048
+
+logging host 54.192.69.254
+service timestamps log datetime msec
+service timestamps debug datetime msec
+
+interface GigabitEthernet 0/0
+ip address 0.0.0.0 0.0.0.0
+ip helper-address 54.192.69.254
+no shutdown
+exit
+
+exit
+copy running-config startup-config
+
+--- --- ---
+
+
+Harare1 - WifiHarare1
+NA: 54.192.70.0/30
+BA: 54.192.70.3/30
+RA: 54.192.70.1/30 - 54.192.70.2/30
 Mask: 255.255.255.252
 
-BEGA - WIFI-BEGA
-NA: 160.180.112.4/30
-BA: 160.180.112.7/30
-RA: 160.180.112.5/30 - 160.180.112.6/30
+Harare1 - Harare2
+NA: 54.192.70.4/30
+BA: 54.192.70.7/30
+RA: 54.192.70.5/30 - 54.192.70.6/30
 Mask: 255.255.255.252
 
-BEGA - BIRLAD
-NA: 160.180.112.8/30
-BA: 160.180.112.11/30
-RA: 160.180.112.9/30 - 160.180.112.10/30
+Harare2 - Harare3
+NA: 54.192.70.8/30
+BA: 54.192.70.11/30
+RA: 54.192.70.9/30 - 54.192.70.10/30
+Mask: 255.255.255.252
+
+Harare3 - Harare4
+NA: 54.192.70.12/30
+BA: 54.192.70.15/30
+RA: 54.192.70.13/30 - 54.192.70.14/30
 Mask: 255.255.255.252
 
 
 * Configurare legaturi si routing
 
-** Router BIRLAD
+** Router Harare3
 configure terminal
+interface Serial 0/0/0
+ip address 54.192.70.13 255.255.255.252
+no shutdown
+exit
 interface Serial 0/0/1
-ip address 160.180.112.10 255.255.255.252
+ip address 54.192.70.10 255.255.255.252
 no shutdown
 exit
 router rip
 version 2
 no auto-summary
-network 160.180.0.0
-network 160.180.96.0
-network 160.180.112.8
+network 54.192.0.0
+network 54.192.68.0
+network 54.192.70.12
+network 54.192.70.8
 exit
 exit
 copy running-config startup-config
 
 
 
-** Router BUZAU
+** Router Harare1
 configure terminal
 interface Serial 0/0/0
-ip address 160.180.112.1 255.255.255.252
+ip address 54.192.70.5 255.255.255.252
 no shutdown
 exit
 router rip
 version 2
 no auto-summary
-network 160.180.64.0
-network 160.180.96.0
-network 160.180.112.0
+network 54.192.64.0
+network 54.192.68.0
+network 54.192.70.4
 exit
 exit
 copy running-config startup-config
 
 
 
-** Router BEGA
+** Router Harare2
 configure terminal
 interface Serial 0/0/0
-ip address 160.180.112.2 255.255.255.252
+ip address 54.192.70.6 255.255.255.252
 no shutdown
 exit
 interface Serial 0/0/1
-ip address 160.180.112.9 255.255.255.252
+ip address 54.192.70.9 255.255.255.252
 no shutdown
 exit
 router rip
 version 2
 no auto-summary
-network 160.180.96.0
-network 160.180.0.0
-network 160.180.64.0
-network 160.180.112.0
-network 160.180.112.8
+network 54.192.68.0
+network 54.192.0.0
+network 54.192.64.0
+network 54.192.70.4
+network 54.192.70.8
+exit
+exit
+copy running-config startup-config
+
+
+
+** Router Harare4
+configure terminal
+interface Serial 0/0/0
+ip address 54.192.70.14 255.255.255.252
+no shutdown
+exit
+router rip
+version 2
+no auto-summary
+network 0.0.0.0
+network 54.192.0.0
+network 54.192.70.12
 exit
 exit
 copy running-config startup-config

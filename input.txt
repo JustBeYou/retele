@@ -1,12 +1,14 @@
-160.181.210.240/14
-BUZAU
-BEGA
+54.211.152.125/11
+Harare1
+Harare2
+5
+Harare1 1022
+WifiHarare1 -1
+Harare2 510
+Harare3 10220
+Harare4 0
 4
-BUZAU 4095
-BEGA 2047
-WIFI-BEGA 0
-BIRLAD 8191
-3
-BUZAU BEGA
-BEGA WIFI-BEGA
-BEGA BIRLAD
+Harare1 WifiHarare1
+Harare1 Harare2
+Harare2 Harare3
+Harare3 Harare4

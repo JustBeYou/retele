@@ -49,6 +49,7 @@ service timestamps debug datetime msec
 
 interface GigabitEthernet 0/0
 ip address <ROUTER_ADDRESS> <MASK_ADDRESS>
+ip helper-address <SERVER_ADDRESS>
 no shutdown
 exit
 
